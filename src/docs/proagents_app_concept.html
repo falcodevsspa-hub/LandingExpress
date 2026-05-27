@@ -1,0 +1,371 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  .app-shell {
+    background: #0d1117;
+    border-radius: 16px;
+    overflow: hidden;
+    font-family: 'DM Sans', var(--font-sans), sans-serif;
+    min-height: 560px;
+    display: flex;
+    flex-direction: column;
+    border: 0.5px solid rgba(255,255,255,0.08);
+  }
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 0.5px solid rgba(255,255,255,0.07);
+  }
+  .topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+  }
+  .topbar-brand span { color: rgba(255,255,255,0.9); font-weight: 500; }
+  .topbar-steps {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .step-dot {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 500;
+    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.3);
+    transition: all 0.3s;
+  }
+  .step-dot.active { background: #2dd4bf; color: #0d1117; }
+  .step-dot.done { background: rgba(45,212,191,0.15); color: #2dd4bf; }
+  .step-line { width: 16px; height: 0.5px; background: rgba(255,255,255,0.1); }
+  .content { flex: 1; padding: 28px 24px 20px; display: flex; flex-direction: column; }
+  .step-label {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
+    color: #2dd4bf; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .step-title {
+    font-size: 22px; font-weight: 600; color: rgba(255,255,255,0.95);
+    line-height: 1.3; margin-bottom: 6px;
+  }
+  .step-sub {
+    font-size: 13px; color: rgba(255,255,255,0.35); margin-bottom: 24px;
+  }
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .opt-card {
+    background: rgba(255,255,255,0.04);
+    border: 0.5px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .opt-card:hover { background: rgba(255,255,255,0.07); border-color: rgba(45,212,191,0.3); }
+  .opt-card.selected { background: rgba(45,212,191,0.07); border-color: rgba(45,212,191,0.5); }
+  .opt-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: rgba(45,212,191,0.1);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: #2dd4bf; font-size: 16px;
+  }
+  .opt-icon.sel { background: rgba(45,212,191,0.2); }
+  .opt-text { flex: 1; }
+  .opt-title { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.85); margin-bottom: 2px; }
+  .opt-desc { font-size: 11px; color: rgba(255,255,255,0.35); line-height: 1.4; }
+  .opt-check {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.15);
+    flex-shrink: 0; margin-top: 2px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .opt-check.checked { background: #2dd4bf; border-color: #2dd4bf; }
+  .opt-check.checked::after { content: ''; display: block; width: 6px; height: 4px; border-left: 1.5px solid #0d1117; border-bottom: 1.5px solid #0d1117; transform: rotate(-45deg) translateY(-1px); }
+  .footer-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 24px;
+    border-top: 0.5px solid rgba(255,255,255,0.06);
+    margin-top: auto;
+  }
+  .btn-back {
+    font-size: 13px; color: rgba(255,255,255,0.35);
+    background: none; border: none; cursor: pointer;
+    display: flex; align-items: center; gap: 4px;
+    padding: 8px 12px; border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .btn-back:hover { color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.04); }
+  .btn-next {
+    font-size: 13px; font-weight: 500;
+    background: #2dd4bf; color: #0d1117;
+    border: none; cursor: pointer;
+    padding: 9px 20px; border-radius: 8px;
+    display: flex; align-items: center; gap: 6px;
+    transition: all 0.2s;
+  }
+  .btn-next:hover { background: #5eead4; }
+  .btn-next:disabled { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.2); cursor: not-allowed; }
+  .progress-bar {
+    height: 2px; background: rgba(255,255,255,0.06);
+  }
+  .progress-fill {
+    height: 100%; background: #2dd4bf;
+    transition: width 0.4s ease;
+  }
+  .screen { display: none; }
+  .screen.active { display: flex; flex-direction: column; flex: 1; }
+  .summary-card {
+    background: rgba(45,212,191,0.05);
+    border: 0.5px solid rgba(45,212,191,0.2);
+    border-radius: 12px; padding: 16px; margin-bottom: 16px;
+  }
+  .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; }
+  .summary-key { font-size: 12px; color: rgba(255,255,255,0.35); }
+  .summary-val { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.8); }
+  .form-row { display: flex; gap: 10px; margin-bottom: 10px; }
+  .field { flex: 1; }
+  .field label { display: block; font-size: 11px; color: rgba(255,255,255,0.3); margin-bottom: 5px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .field input {
+    width: 100%; padding: 9px 12px; border-radius: 8px;
+    background: rgba(255,255,255,0.05);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.85); font-size: 13px;
+    outline: none; transition: border-color 0.2s;
+  }
+  .field input:focus { border-color: rgba(45,212,191,0.4); }
+  .field input::placeholder { color: rgba(255,255,255,0.2); }
+  .badge-tag {
+    display: inline-flex; align-items: center;
+    background: rgba(45,212,191,0.1); color: #2dd4bf;
+    font-size: 11px; font-weight: 500; padding: 3px 8px;
+    border-radius: 20px; margin-right: 4px;
+  }
+</style>
+
+<div class="app-shell">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <i class="ti ti-cpu" style="font-size:16px;color:#2dd4bf" aria-hidden="true"></i>
+      FalcoDevs / <span>ProAgents</span>
+    </div>
+    <div class="topbar-steps">
+      <div class="step-dot active" id="dot1">1</div>
+      <div class="step-line"></div>
+      <div class="step-dot" id="dot2">2</div>
+      <div class="step-line"></div>
+      <div class="step-dot" id="dot3">3</div>
+      <div class="step-line"></div>
+      <div class="step-dot" id="dot4">
+        <i class="ti ti-check" style="font-size:11px" aria-hidden="true"></i>
+      </div>
+    </div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progress" style="width:25%"></div></div>
+
+  <div class="content">
+
+    <div class="screen active" id="s1">
+      <div class="step-label">Paso 1 de 3</div>
+      <div class="step-title">¿Qué quieres automatizar?</div>
+      <div class="step-sub">Selecciona el área principal de tu negocio</div>
+      <div class="options-grid">
+        <div class="opt-card" onclick="selectOpt(this,'area','Atención al cliente')">
+          <div class="opt-icon"><i class="ti ti-message-chatbot" aria-hidden="true"></i></div>
+          <div class="opt-text"><div class="opt-title">Atención al cliente</div><div class="opt-desc">Respuestas automáticas 24/7</div></div>
+          <div class="opt-check"></div>
+        </div>
+        <div class="opt-card" onclick="selectOpt(this,'area','Ventas y seguimiento')">
+          <div class="opt-icon"><i class="ti ti-trending-up" aria-hidden="true"></i></div>
+          <div class="opt-text"><div class="opt-title">Ventas y seguimiento</div><div class="opt-desc">Pipeline y leads automático</div></div>
+          <div class="opt-check"></div>
+        </div>
+        <div class="opt-card" onclick="selectOpt(this,'area','Procesos internos')">
+          <div class="opt-icon"><i class="ti ti-settings-automation" aria-hidden="true"></i></div>
+          <div class="opt-text"><div class="opt-title">Procesos internos</div><div class="opt-desc">Flujos y tareas repetitivas</div></div>
+          <div class="opt-check"></div>
+        </div>
+        <div class="opt-card" onclick="selectOpt(this,'area','Otro proceso')">
+          <div class="opt-icon"><i class="ti ti-puzzle" aria-hidden="true"></i></div>
+          <div class="opt-text"><div class="opt-title">Otro proceso</div><div class="opt-desc">Cuéntanos tu caso específico</div></div>
+          <div class="opt-check"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen" id="s2">
+      <div class="step-label">Paso 2 de 3</div>
+      <div class="step-title">¿Cuánto tiempo pierdes en esto?</div>
+      <div class="step-sub">Así dimensionamos el agente correcto para ti</div>
+      <div class="options-grid" style="grid-template-columns:1fr 1fr 1fr; gap:8px">
+        <div class="opt-card" onclick="selectOpt(this,'tiempo','1–2 hrs/día')" style="flex-direction:column;align-items:center;text-align:center;padding:16px 10px">
+          <div style="font-size:20px;font-weight:600;color:#2dd4bf;margin-bottom:4px">1–2h</div>
+          <div class="opt-desc">al día</div>
+        </div>
+        <div class="opt-card" onclick="selectOpt(this,'tiempo','3–5 hrs/día')" style="flex-direction:column;align-items:center;text-align:center;padding:16px 10px">
+          <div style="font-size:20px;font-weight:600;color:#2dd4bf;margin-bottom:4px">3–5h</div>
+          <div class="opt-desc">al día</div>
+        </div>
+        <div class="opt-card" onclick="selectOpt(this,'tiempo','+5 hrs/día')" style="flex-direction:column;align-items:center;text-align:center;padding:16px 10px">
+          <div style="font-size:20px;font-weight:600;color:#2dd4bf;margin-bottom:4px">+5h</div>
+          <div class="opt-desc">al día</div>
+        </div>
+      </div>
+      <div style="margin-top:4px">
+        <div class="step-label" style="margin-bottom:8px">¿Qué herramientas usas?</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <div class="opt-card" onclick="toggleTool(this,'WhatsApp')" style="padding:7px 12px;border-radius:20px;display:inline-flex;gap:6px;align-items:center">
+            <i class="ti ti-brand-whatsapp" style="font-size:14px;color:#2dd4bf" aria-hidden="true"></i>
+            <span style="font-size:12px;color:rgba(255,255,255,0.7)">WhatsApp</span>
+          </div>
+          <div class="opt-card" onclick="toggleTool(this,'CRM/ERP')" style="padding:7px 12px;border-radius:20px;display:inline-flex;gap:6px;align-items:center">
+            <i class="ti ti-database" style="font-size:14px;color:#2dd4bf" aria-hidden="true"></i>
+            <span style="font-size:12px;color:rgba(255,255,255,0.7)">CRM/ERP</span>
+          </div>
+          <div class="opt-card" onclick="toggleTool(this,'Email')" style="padding:7px 12px;border-radius:20px;display:inline-flex;gap:6px;align-items:center">
+            <i class="ti ti-mail" style="font-size:14px;color:#2dd4bf" aria-hidden="true"></i>
+            <span style="font-size:12px;color:rgba(255,255,255,0.7)">Email</span>
+          </div>
+          <div class="opt-card" onclick="toggleTool(this,'Google Sheets')" style="padding:7px 12px;border-radius:20px;display:inline-flex;gap:6px;align-items:center">
+            <i class="ti ti-table" style="font-size:14px;color:#2dd4bf" aria-hidden="true"></i>
+            <span style="font-size:12px;color:rgba(255,255,255,0.7)">Google Sheets</span>
+          </div>
+          <div class="opt-card" onclick="toggleTool(this,'Instagram')" style="padding:7px 12px;border-radius:20px;display:inline-flex;gap:6px;align-items:center">
+            <i class="ti ti-brand-instagram" style="font-size:14px;color:#2dd4bf" aria-hidden="true"></i>
+            <span style="font-size:12px;color:rgba(255,255,255,0.7)">Instagram</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen" id="s3">
+      <div class="step-label">Paso 3 de 3</div>
+      <div class="step-title">Casi listo — ¿a quién le enviamos la propuesta?</div>
+      <div class="step-sub">En menos de 24 horas recibes alcance, fechas y costo definido</div>
+      <div class="summary-card" id="summary">
+        <div class="summary-row"><span class="summary-key">Automatizar</span><span class="summary-val" id="sum-area">—</span></div>
+        <div class="summary-row"><span class="summary-key">Tiempo perdido</span><span class="summary-val" id="sum-tiempo">—</span></div>
+        <div class="summary-row"><span class="summary-key">Herramientas</span><span class="summary-val" id="sum-tools">—</span></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Nombre</label><input type="text" placeholder="Tu nombre" id="f-nombre"></div>
+        <div class="field"><label>Empresa</label><input type="text" placeholder="Nombre empresa" id="f-empresa"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Email o WhatsApp</label><input type="text" placeholder="Como prefieras que te contactemos" id="f-contact"></div>
+      </div>
+    </div>
+
+    <div class="screen" id="s4" style="align-items:center;justify-content:center;text-align:center">
+      <div style="width:52px;height:52px;border-radius:50%;background:rgba(45,212,191,0.15);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+        <i class="ti ti-check" style="font-size:24px;color:#2dd4bf" aria-hidden="true"></i>
+      </div>
+      <div style="font-size:19px;font-weight:600;color:rgba(255,255,255,0.9);margin-bottom:8px">Propuesta en camino</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.35);max-width:280px;line-height:1.6">Revisamos tu caso y te respondemos en menos de 24 horas con un plan concreto.</div>
+    </div>
+
+  </div>
+
+  <div class="footer-bar" id="footer">
+    <button class="btn-back" id="btn-back" onclick="goBack()" style="visibility:hidden">
+      <i class="ti ti-arrow-left" style="font-size:14px" aria-hidden="true"></i> Atrás
+    </button>
+    <button class="btn-next" id="btn-next" onclick="goNext()" disabled>
+      Continuar <i class="ti ti-arrow-right" style="font-size:14px" aria-hidden="true"></i>
+    </button>
+  </div>
+</div>
+
+<script>
+let cur = 1;
+const sel = { area: null, tiempo: null, tools: [] };
+
+function selectOpt(el, key, val) {
+  const grid = el.parentElement;
+  grid.querySelectorAll('.opt-card').forEach(c => {
+    c.classList.remove('selected');
+    const ch = c.querySelector('.opt-check');
+    if (ch) ch.classList.remove('checked');
+  });
+  el.classList.add('selected');
+  const ch = el.querySelector('.opt-check');
+  if (ch) ch.classList.add('checked');
+  sel[key] = val;
+  checkNext();
+}
+
+function toggleTool(el, name) {
+  el.classList.toggle('selected');
+  const idx = sel.tools.indexOf(name);
+  if (idx === -1) sel.tools.push(name);
+  else sel.tools.splice(idx, 1);
+}
+
+function checkNext() {
+  const btn = document.getElementById('btn-next');
+  if (cur === 1) btn.disabled = !sel.area;
+  else if (cur === 2) btn.disabled = !sel.tiempo;
+  else if (cur === 3) btn.disabled = false;
+  else btn.disabled = false;
+}
+
+function goNext() {
+  if (cur === 3) {
+    document.getElementById('sum-area').textContent = sel.area || '—';
+    document.getElementById('sum-tiempo').textContent = sel.tiempo || '—';
+    document.getElementById('sum-tools').textContent = sel.tools.length ? sel.tools.join(', ') : 'No especificado';
+  }
+  if (cur >= 3) {
+    showScreen(4);
+    document.getElementById('footer').style.display = 'none';
+    return;
+  }
+  cur++;
+  showScreen(cur);
+}
+
+function goBack() {
+  if (cur <= 1) return;
+  cur--;
+  showScreen(cur);
+}
+
+function showScreen(n) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('s' + n).classList.add('active');
+
+  const dots = [1,2,3,4];
+  dots.forEach(i => {
+    const d = document.getElementById('dot' + i);
+    d.classList.remove('active','done');
+    if (i < n) d.classList.add('done');
+    else if (i === n) d.classList.add('active');
+  });
+
+  const pct = n === 1 ? 25 : n === 2 ? 50 : n === 3 ? 75 : 100;
+  document.getElementById('progress').style.width = pct + '%';
+
+  const back = document.getElementById('btn-back');
+  back.style.visibility = n > 1 ? 'visible' : 'hidden';
+
+  const next = document.getElementById('btn-next');
+  next.innerHTML = n === 3
+    ? 'Enviar <i class="ti ti-send" style="font-size:14px" aria-hidden="true"></i>'
+    : 'Continuar <i class="ti ti-arrow-right" style="font-size:14px" aria-hidden="true"></i>';
+
+  checkNext();
+  if (n === 3) next.disabled = false;
+}
+
+checkNext();
+</script>

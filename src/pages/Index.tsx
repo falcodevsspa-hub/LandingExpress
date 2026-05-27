@@ -1,27 +1,5 @@
-import Header from "@/components/Header";
-import Hero from "@/components/Hero";
-import ValueProps from "@/components/ValueProps";
-import Process from "@/components/Process";
-import Portfolio from "@/components/Portfolio";
-import Pricing from "@/components/Pricing";
-import Testimonials from "@/components/Testimonials";
-import Contact from "@/components/Contact";
-import Footer from "@/components/Footer";
+import WebExpress from "./webexpress";
 
-const Index = () => {
-  return (
-    <div className="min-h-screen">
-      <Header />
-      <Hero />
-      <ValueProps />
-      <Process />
-      <Portfolio />
-      <Pricing />
-      <Testimonials />
-      <Contact />
-      <Footer />
-    </div>
-  );
-};
+const Index = () => <WebExpress />;
 
 export default Index;

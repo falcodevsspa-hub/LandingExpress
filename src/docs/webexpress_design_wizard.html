@@ -1,0 +1,425 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.shell{background:#0a0f0d;border-radius:16px;overflow:hidden;font-family:var(--font-sans);border:0.5px solid rgba(255,255,255,0.07);min-height:580px;display:flex;flex-direction:column}
+.top{display:flex;align-items:center;justify-content:space-between;padding:13px 20px;border-bottom:0.5px solid rgba(255,255,255,0.07)}
+.brand{display:flex;align-items:center;gap:7px;font-size:13px;color:rgba(255,255,255,0.35)}
+.brand span{color:rgba(255,255,255,0.9);font-weight:500}
+.dots{display:flex;align-items:center;gap:5px}
+.dot{width:22px;height:22px;border-radius:50%;font-size:10px;font-weight:500;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.25);transition:all .3s}
+.dot.on{background:#00d97e;color:#0a0f0d}
+.dot.done{background:rgba(0,217,126,0.15);color:#00d97e}
+.sep{width:14px;height:0.5px;background:rgba(255,255,255,0.08)}
+.prog{height:2px;background:rgba(255,255,255,0.05)}
+.prog-fill{height:100%;background:#00d97e;transition:width .4s ease}
+.body{flex:1;padding:26px 22px 16px;display:flex;flex-direction:column}
+.scr{display:none;flex-direction:column;flex:1}
+.scr.on{display:flex}
+.slabel{font-size:10px;font-weight:500;letter-spacing:.08em;color:#00d97e;text-transform:uppercase;margin-bottom:6px}
+.stitle{font-size:21px;font-weight:600;color:rgba(255,255,255,0.95);line-height:1.25;margin-bottom:4px}
+.ssub{font-size:12px;color:rgba(255,255,255,0.3);margin-bottom:20px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.card{background:rgba(255,255,255,0.03);border:0.5px solid rgba(255,255,255,0.07);border-radius:12px;padding:13px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:7px}
+.card:hover{background:rgba(255,255,255,0.06);border-color:rgba(0,217,126,0.25)}
+.card.sel{background:rgba(0,217,126,0.07);border-color:rgba(0,217,126,0.45)}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between}
+.cicon{width:30px;height:30px;border-radius:8px;background:rgba(0,217,126,0.1);display:flex;align-items:center;justify-content:center;color:#00d97e;font-size:15px}
+.chk{width:15px;height:15px;border-radius:50%;border:1px solid rgba(255,255,255,0.15);transition:all .2s;flex-shrink:0}
+.chk.on{background:#00d97e;border-color:#00d97e;display:flex;align-items:center;justify-content:center}
+.chk.on::after{content:'';display:block;width:5px;height:3px;border-left:1.5px solid #0a0f0d;border-bottom:1.5px solid #0a0f0d;transform:rotate(-45deg) translateY(-1px)}
+.ctitle{font-size:12px;font-weight:500;color:rgba(255,255,255,0.85)}
+.cdesc{font-size:10px;color:rgba(255,255,255,0.3);line-height:1.4}
+.palette-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.pal{border-radius:10px;overflow:hidden;border:2px solid transparent;cursor:pointer;transition:all .2s;width:calc(25% - 8px)}
+.pal:hover{border-color:rgba(255,255,255,0.2)}
+.pal.sel{border-color:#00d97e}
+.pal-preview{height:40px;display:flex}
+.pal-swatch{flex:1;height:100%}
+.pal-name{font-size:10px;color:rgba(255,255,255,0.4);text-align:center;padding:4px 0;background:rgba(255,255,255,0.03)}
+.pal.sel .pal-name{color:#00d97e}
+.feat-grid{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px}
+.feat{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border-radius:20px;border:0.5px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);cursor:pointer;transition:all .2s}
+.feat:hover{border-color:rgba(0,217,126,0.3);background:rgba(0,217,126,0.05)}
+.feat.sel{border-color:rgba(0,217,126,0.5);background:rgba(0,217,126,0.08)}
+.feat span{font-size:11px;color:rgba(255,255,255,0.6)}
+.feat.sel span{color:#00d97e}
+.feat i{font-size:13px;color:rgba(255,255,255,0.3)}
+.feat.sel i{color:#00d97e}
+.style-card{background:rgba(255,255,255,0.03);border:0.5px solid rgba(255,255,255,0.07);border-radius:12px;overflow:hidden;cursor:pointer;transition:all .2s}
+.style-card:hover{border-color:rgba(0,217,126,0.25)}
+.style-card.sel{border-color:rgba(0,217,126,0.5)}
+.style-preview{height:56px;display:flex;align-items:center;justify-content:center;gap:6px;padding:8px}
+.style-bar{height:6px;border-radius:3px;flex:1}
+.style-info{padding:8px 10px;border-top:0.5px solid rgba(255,255,255,0.05)}
+.style-name{font-size:11px;font-weight:500;color:rgba(255,255,255,0.7)}
+.style-desc{font-size:9px;color:rgba(255,255,255,0.25);margin-top:1px}
+.summary{background:rgba(0,217,126,0.04);border:0.5px solid rgba(0,217,126,0.18);border-radius:12px;padding:12px;margin-bottom:14px}
+.sum-row{display:flex;justify-content:space-between;align-items:flex-start;padding:4px 0;border-bottom:0.5px solid rgba(255,255,255,0.05)}
+.sum-row:last-child{border-bottom:none}
+.sum-k{font-size:10px;color:rgba(255,255,255,0.3)}
+.sum-v{font-size:10px;font-weight:500;color:rgba(255,255,255,0.7);text-align:right;max-width:60%}
+.pal-mini{display:inline-flex;gap:3px;vertical-align:middle;margin-left:4px}
+.pal-dot{width:10px;height:10px;border-radius:50%}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:4px}
+.fld{display:flex;flex-direction:column;gap:4px}
+.fld label{font-size:10px;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:.05em}
+.fld input,.fld select{width:100%;padding:8px 11px;border-radius:8px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.09);color:rgba(255,255,255,0.8);font-size:12px;outline:none;transition:all .2s;font-family:inherit}
+.fld input::placeholder{color:rgba(255,255,255,0.18)}
+.fld input:focus,.fld select:focus{border-color:rgba(0,217,126,0.4)}
+.fld select option{background:#1a2420;color:rgba(255,255,255,0.8)}
+.fld input.err{border-color:rgba(0,217,126,0.6)}
+.err-msg{font-size:10px;color:#00d97e;margin-top:1px;min-height:14px}
+.toggle-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px}
+.tog-box{border:0.5px solid rgba(255,255,255,0.09);border-radius:10px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all .2s}
+.tog-box.on{border-color:rgba(0,217,126,0.4);background:rgba(0,217,126,0.05)}
+.tog-label{font-size:12px;font-weight:500;color:rgba(255,255,255,0.7)}
+.tog-box.on .tog-label{color:#00d97e}
+.tog{width:36px;height:20px;border-radius:10px;background:rgba(255,255,255,0.1);position:relative;transition:background .2s;flex-shrink:0}
+.tog.on{background:#00d97e}
+.tog::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s}
+.tog.on::after{transform:translateX(16px)}
+.phone-wrap{display:flex;gap:8px;align-items:stretch}
+.phone-wrap select{width:130px;flex-shrink:0;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.09);color:rgba(255,255,255,0.8);font-size:12px;outline:none;font-family:inherit}
+.phone-wrap select:focus{border-color:rgba(0,217,126,0.4)}
+.phone-wrap select option{background:#1a2420}
+.phone-input-wrap{flex:1;display:flex;align-items:center;border-radius:8px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.09);overflow:hidden;transition:border-color .2s}
+.phone-input-wrap:focus-within{border-color:rgba(0,217,126,0.4)}
+.phone-prefix{padding:0 8px;font-size:12px;color:rgba(255,255,255,0.35);border-right:0.5px solid rgba(255,255,255,0.09);height:100%;display:flex;align-items:center}
+.phone-input-wrap input{flex:1;padding:8px 10px;background:transparent;border:none;color:rgba(255,255,255,0.8);font-size:12px;outline:none;font-family:inherit}
+.phone-input-wrap input::placeholder{color:rgba(255,255,255,0.18)}
+.call-opt{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:10px;border:0.5px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.02);cursor:pointer;transition:all .2s;margin-top:8px}
+.call-opt:hover{border-color:rgba(0,217,126,0.2)}
+.call-opt.on{border-color:rgba(0,217,126,0.35);background:rgba(0,217,126,0.04)}
+.call-radio{width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.2);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.call-opt.on .call-radio{border-color:#00d97e;background:rgba(0,217,126,0.15)}
+.call-opt.on .call-radio::after{content:'';width:7px;height:7px;border-radius:50%;background:#00d97e;display:block}
+.call-text div:first-child{font-size:12px;font-weight:500;color:rgba(255,255,255,0.75)}
+.call-opt.on .call-text div:first-child{color:#00d97e}
+.call-text div:last-child{font-size:10px;color:rgba(255,255,255,0.25);margin-top:1px}
+.foot{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;border-top:0.5px solid rgba(255,255,255,0.05);margin-top:auto}
+.btn-b{font-size:12px;color:rgba(255,255,255,0.3);background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;padding:7px 10px;border-radius:7px;transition:all .2s}
+.btn-b:hover{color:rgba(255,255,255,0.55);background:rgba(255,255,255,0.04)}
+.btn-n{font-size:12px;font-weight:500;background:#00d97e;color:#0a0f0d;border:none;cursor:pointer;padding:8px 18px;border-radius:8px;display:flex;align-items:center;gap:5px;transition:all .2s}
+.btn-n:hover{background:#00f590}
+.btn-n:disabled{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.2);cursor:not-allowed}
+.btn-wsp{font-size:13px;font-weight:500;background:#25d366;color:#fff;border:none;cursor:pointer;padding:11px 22px;border-radius:10px;display:flex;align-items:center;gap:7px;transition:all .2s;margin:0 auto}
+.btn-wsp:hover{background:#1fb555}
+</style>
+
+<div class="shell">
+  <div class="top">
+    <div class="brand"><i class="ti ti-layout" style="font-size:15px;color:#00d97e" aria-hidden="true"></i> FalcoDevs / <span>WebExpress</span></div>
+    <div class="dots">
+      <div class="dot on" id="d1">1</div><div class="sep"></div>
+      <div class="dot" id="d2">2</div><div class="sep"></div>
+      <div class="dot" id="d3">3</div><div class="sep"></div>
+      <div class="dot" id="d4">4</div><div class="sep"></div>
+      <div class="dot" id="d5"><i class="ti ti-check" style="font-size:10px" aria-hidden="true"></i></div>
+    </div>
+  </div>
+  <div class="prog"><div class="prog-fill" id="prog" style="width:20%"></div></div>
+
+  <div class="body">
+
+    <div class="scr on" id="s1">
+      <div class="slabel">Paso 1 de 4</div>
+      <div class="stitle">¿Qué tipo de sitio necesitas?</div>
+      <div class="ssub">Elige el que mejor describe tu negocio</div>
+      <div class="g2">
+        <div class="card" onclick="pick(this,'tipo','Sucursal Digital')">
+          <div class="card-top"><div class="cicon"><i class="ti ti-building-store" aria-hidden="true"></i></div><div class="chk"></div></div>
+          <div class="ctitle">Sucursal Digital</div>
+          <div class="cdesc">Presencia web completa con links a tus redes y contacto directo</div>
+        </div>
+        <div class="card" onclick="pick(this,'tipo','Landing Page')">
+          <div class="card-top"><div class="cicon"><i class="ti ti-speakerphone" aria-hidden="true"></i></div><div class="chk"></div></div>
+          <div class="ctitle">Landing Page</div>
+          <div class="cdesc">Página de aterrizaje para captar clientes y generar conversiones</div>
+        </div>
+        <div class="card" onclick="pick(this,'tipo','Catálogo + Carrito WhatsApp')">
+          <div class="card-top"><div class="cicon"><i class="ti ti-shopping-cart" aria-hidden="true"></i></div><div class="chk"></div></div>
+          <div class="ctitle">Catálogo + Carrito</div>
+          <div class="cdesc">Tus productos con carrito — el pedido llega directo a tu WhatsApp</div>
+        </div>
+        <div class="card" onclick="pick(this,'tipo','Portal de Servicios')">
+          <div class="card-top"><div class="cicon"><i class="ti ti-briefcase" aria-hidden="true"></i></div><div class="chk"></div></div>
+          <div class="ctitle">Portal de Servicios</div>
+          <div class="cdesc">Muestra lo que ofreces con agendamiento y cotización online</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scr" id="s2">
+      <div class="slabel">Paso 2 de 4</div>
+      <div class="stitle">¿Cómo quieres que se vea?</div>
+      <div class="ssub">Elige el estilo y la paleta de colores</div>
+      <div class="g3" style="margin-bottom:14px">
+        <div class="style-card" onclick="pickStyle(this,'Minimalista')">
+          <div class="style-preview" style="background:#fafafa"><div class="style-bar" style="background:#e8e8e8;height:4px"></div><div class="style-bar" style="background:#111;width:30px;flex:none;height:4px"></div><div class="style-bar" style="background:#e8e8e8;height:4px"></div></div>
+          <div class="style-info"><div class="style-name">Minimalista</div><div class="style-desc">Limpio y espacioso</div></div>
+        </div>
+        <div class="style-card" onclick="pickStyle(this,'Oscuro Premium')">
+          <div class="style-preview" style="background:#0d1117"><div class="style-bar" style="background:#1e2530"></div><div class="style-bar" style="background:#2dd4bf;width:24px;flex:none"></div><div class="style-bar" style="background:#1e2530"></div></div>
+          <div class="style-info"><div class="style-name">Oscuro Premium</div><div class="style-desc">Moderno y tech</div></div>
+        </div>
+        <div class="style-card" onclick="pickStyle(this,'Vibrante')">
+          <div class="style-preview" style="background:#fff"><div class="style-bar" style="background:#f0f0f0"></div><div class="style-bar" style="background:#ff6b35;width:28px;flex:none"></div><div class="style-bar" style="background:#f0f0f0"></div></div>
+          <div class="style-info"><div class="style-name">Vibrante</div><div class="style-desc">Colorido y energético</div></div>
+        </div>
+        <div class="style-card" onclick="pickStyle(this,'Corporativo')">
+          <div class="style-preview" style="background:#f8f8f8"><div class="style-bar" style="background:#e0e0e0"></div><div class="style-bar" style="background:#1a3a6b;width:26px;flex:none"></div><div class="style-bar" style="background:#e0e0e0"></div></div>
+          <div class="style-info"><div class="style-name">Corporativo</div><div class="style-desc">Serio y confiable</div></div>
+        </div>
+        <div class="style-card" onclick="pickStyle(this,'Natural')">
+          <div class="style-preview" style="background:#f5f0eb"><div class="style-bar" style="background:#e8ddd0"></div><div class="style-bar" style="background:#4a7c59;width:26px;flex:none"></div><div class="style-bar" style="background:#e8ddd0"></div></div>
+          <div class="style-info"><div class="style-name">Natural</div><div class="style-desc">Orgánico y cercano</div></div>
+        </div>
+        <div class="style-card" onclick="pickStyle(this,'Bold & Creativo')">
+          <div class="style-preview" style="background:#1a0533"><div class="style-bar" style="background:#2d0d52"></div><div class="style-bar" style="background:#c840eb;width:28px;flex:none"></div><div class="style-bar" style="background:#2d0d52"></div></div>
+          <div class="style-info"><div class="style-name">Bold & Creativo</div><div class="style-desc">Impactante y único</div></div>
+        </div>
+      </div>
+      <div style="font-size:10px;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Paleta de colores</div>
+      <div class="palette-row">
+        <div class="pal" onclick="pickPal(this,'Esmeralda','#00d97e,#0a4f30,#e8fff5')"><div class="pal-preview"><div class="pal-swatch" style="background:#00d97e"></div><div class="pal-swatch" style="background:#0a4f30"></div><div class="pal-swatch" style="background:#e8fff5"></div></div><div class="pal-name">Esmeralda</div></div>
+        <div class="pal" onclick="pickPal(this,'Océano','#378add,#042c53,#e6f1fb')"><div class="pal-preview"><div class="pal-swatch" style="background:#378add"></div><div class="pal-swatch" style="background:#042c53"></div><div class="pal-swatch" style="background:#e6f1fb"></div></div><div class="pal-name">Océano</div></div>
+        <div class="pal" onclick="pickPal(this,'Sunset','#d85a30,#4a1b0c,#faece7')"><div class="pal-preview"><div class="pal-swatch" style="background:#d85a30"></div><div class="pal-swatch" style="background:#4a1b0c"></div><div class="pal-swatch" style="background:#faece7"></div></div><div class="pal-name">Sunset</div></div>
+        <div class="pal" onclick="pickPal(this,'Violeta','#7f77dd,#26215c,#eeedfe')"><div class="pal-preview"><div class="pal-swatch" style="background:#7f77dd"></div><div class="pal-swatch" style="background:#26215c"></div><div class="pal-swatch" style="background:#eeedfe"></div></div><div class="pal-name">Violeta</div></div>
+        <div class="pal" onclick="pickPal(this,'Rosa','#d4537e,#4b1528,#fbeaf0')"><div class="pal-preview"><div class="pal-swatch" style="background:#d4537e"></div><div class="pal-swatch" style="background:#4b1528"></div><div class="pal-swatch" style="background:#fbeaf0"></div></div><div class="pal-name">Rosa</div></div>
+        <div class="pal" onclick="pickPal(this,'Ámbar','#ef9f27,#412402,#faeeda')"><div class="pal-preview"><div class="pal-swatch" style="background:#ef9f27"></div><div class="pal-swatch" style="background:#412402"></div><div class="pal-swatch" style="background:#faeeda"></div></div><div class="pal-name">Ámbar</div></div>
+        <div class="pal" onclick="pickPal(this,'Neutro','#888780,#2c2c2a,#f1efe8')"><div class="pal-preview"><div class="pal-swatch" style="background:#888780"></div><div class="pal-swatch" style="background:#2c2c2a"></div><div class="pal-swatch" style="background:#f1efe8"></div></div><div class="pal-name">Neutro</div></div>
+        <div class="pal" onclick="pickPal(this,'Clásico','#111111,#444444,#f5f5f5')"><div class="pal-preview"><div class="pal-swatch" style="background:#111"></div><div class="pal-swatch" style="background:#444"></div><div class="pal-swatch" style="background:#f5f5f5"></div></div><div class="pal-name">Clásico</div></div>
+      </div>
+    </div>
+
+    <div class="scr" id="s3">
+      <div class="slabel">Paso 3 de 4</div>
+      <div class="stitle">¿Qué secciones necesita tu sitio?</div>
+      <div class="ssub">Puedes elegir varias</div>
+      <div class="feat-grid">
+        <div class="feat" onclick="togFeat(this,'Catálogo de productos')"><i class="ti ti-package" aria-hidden="true"></i><span>Catálogo</span></div>
+        <div class="feat" onclick="togFeat(this,'Carrito → WhatsApp')"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i><span>Carrito → WhatsApp</span></div>
+        <div class="feat" onclick="togFeat(this,'Links redes sociales')"><i class="ti ti-social" aria-hidden="true"></i><span>Redes sociales</span></div>
+        <div class="feat" onclick="togFeat(this,'Formulario de contacto')"><i class="ti ti-mail" aria-hidden="true"></i><span>Formulario contacto</span></div>
+        <div class="feat" onclick="togFeat(this,'WhatsApp flotante')"><i class="ti ti-message-circle" aria-hidden="true"></i><span>WhatsApp flotante</span></div>
+        <div class="feat" onclick="togFeat(this,'Agendamiento online')"><i class="ti ti-calendar" aria-hidden="true"></i><span>Agendamiento</span></div>
+        <div class="feat" onclick="togFeat(this,'Galería de fotos')"><i class="ti ti-photo" aria-hidden="true"></i><span>Galería</span></div>
+        <div class="feat" onclick="togFeat(this,'Mapa / ubicación')"><i class="ti ti-map-pin" aria-hidden="true"></i><span>Mapa / ubicación</span></div>
+        <div class="feat" onclick="togFeat(this,'Testimonios')"><i class="ti ti-star" aria-hidden="true"></i><span>Testimonios</span></div>
+        <div class="feat" onclick="togFeat(this,'Blog / Noticias')"><i class="ti ti-news" aria-hidden="true"></i><span>Blog</span></div>
+        <div class="feat" onclick="togFeat(this,'SEO básico')"><i class="ti ti-search" aria-hidden="true"></i><span>SEO básico</span></div>
+        <div class="feat" onclick="togFeat(this,'Multiidioma')"><i class="ti ti-world" aria-hidden="true"></i><span>Multiidioma</span></div>
+      </div>
+      <div style="margin-top:auto;padding-top:12px">
+        <div style="font-size:10px;color:rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px">¿Tienes logo o branding propio?</div>
+        <div style="display:flex;gap:8px">
+          <div class="feat" onclick="togExcl(this,'logo','Sí, tengo logo')"><i class="ti ti-check" aria-hidden="true"></i><span>Sí, tengo logo</span></div>
+          <div class="feat" onclick="togExcl(this,'logo','Necesito diseño')"><i class="ti ti-brush" aria-hidden="true"></i><span>Necesito diseño</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scr" id="s4">
+      <div class="slabel">Paso 4 de 4</div>
+      <div class="stitle">Cuéntanos de tu negocio</div>
+      <div class="ssub">Con esto armamos la propuesta exacta para ti</div>
+
+      <div class="summary" id="sum">
+        <div class="sum-row"><span class="sum-k">Tipo</span><span class="sum-v" id="sv-tipo">—</span></div>
+        <div class="sum-row"><span class="sum-k">Estilo</span><span class="sum-v" id="sv-estilo">—</span></div>
+        <div class="sum-row"><span class="sum-k">Paleta</span><span class="sum-v" id="sv-pal">—</span></div>
+        <div class="sum-row"><span class="sum-k">Secciones</span><span class="sum-v" id="sv-feats" style="word-break:break-word">—</span></div>
+      </div>
+
+      <div class="frow">
+        <div class="fld">
+          <input type="text" id="f-nombre" placeholder="Tu nombre" oninput="valField(this,'nombre')" onblur="valField(this,'nombre')">
+          <div class="err-msg" id="e-nombre"></div>
+        </div>
+        <div class="fld">
+          <input type="text" id="f-empresa" placeholder="Nombre empresa" oninput="valField(this,'empresa')" onblur="valField(this,'empresa')">
+          <div class="err-msg" id="e-empresa"></div>
+        </div>
+      </div>
+
+      <div class="toggle-row">
+        <div class="tog-box on" id="tog-email" onclick="togContact('email')">
+          <span class="tog-label">Email</span>
+          <div class="tog on" id="tog-email-sw"></div>
+        </div>
+        <div class="tog-box on" id="tog-wsp" onclick="togContact('wsp')">
+          <span class="tog-label">WhatsApp</span>
+          <div class="tog on" id="tog-wsp-sw"></div>
+        </div>
+      </div>
+
+      <div id="email-block" style="margin-bottom:8px">
+        <div class="fld">
+          <input type="text" id="f-email" placeholder="tu@email.com" oninput="valField(this,'email')" onblur="valField(this,'email')">
+          <div class="err-msg" id="e-email"></div>
+        </div>
+      </div>
+
+      <div id="wsp-block" style="margin-bottom:4px">
+        <div style="font-size:10px;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Código país WhatsApp</div>
+        <div class="phone-wrap">
+          <select id="f-pais">
+            <option value="+56">Chile (+56)</option>
+            <option value="+54">Argentina (+54)</option>
+            <option value="+57">Colombia (+57)</option>
+            <option value="+51">Perú (+51)</option>
+            <option value="+52">México (+52)</option>
+            <option value="+34">España (+34)</option>
+            <option value="+1">EE.UU. (+1)</option>
+          </select>
+          <div class="phone-input-wrap">
+            <span class="phone-prefix" id="prefix-show">+56</span>
+            <input type="text" id="f-phone" placeholder="9 1234 5678" oninput="valField(this,'phone')" onblur="valField(this,'phone')">
+          </div>
+        </div>
+        <div class="err-msg" id="e-phone"></div>
+      </div>
+
+      <div class="call-opt" id="call-opt" onclick="togCall()">
+        <div class="call-radio"></div>
+        <div class="call-text">
+          <div>Solicitar una llamada</div>
+          <div>Coordinamos una llamada para revisar tu caso y acelerar la propuesta.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scr" id="s5" style="align-items:center;justify-content:center;text-align:center;gap:14px">
+      <div style="width:48px;height:48px;border-radius:50%;background:rgba(0,217,126,0.12);display:flex;align-items:center;justify-content:center;margin:0 auto">
+        <i class="ti ti-check" style="font-size:22px;color:#00d97e" aria-hidden="true"></i>
+      </div>
+      <div style="font-size:18px;font-weight:600;color:rgba(255,255,255,0.9)">¡Todo listo!</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.3);max-width:260px;line-height:1.6">Te respondemos con la propuesta en menos de 24 horas</div>
+      <button class="btn-wsp" onclick="sendWsp()">
+        <i class="ti ti-brand-whatsapp" style="font-size:18px" aria-hidden="true"></i>
+        Enviar solicitud por WhatsApp
+      </button>
+      <div style="font-size:10px;color:rgba(255,255,255,0.15);margin-top:4px">falcodevs.cl · WebExpress</div>
+    </div>
+
+  </div>
+
+  <div class="foot" id="foot">
+    <button class="btn-b" id="bb" onclick="back()" style="visibility:hidden">
+      <i class="ti ti-arrow-left" style="font-size:13px" aria-hidden="true"></i> Atrás
+    </button>
+    <button class="btn-n" id="bn" onclick="next()" disabled>
+      Continuar <i class="ti ti-arrow-right" style="font-size:13px" aria-hidden="true"></i>
+    </button>
+  </div>
+</div>
+
+<script>
+let cur=1;
+const st={tipo:null,estilo:null,pal:null,palHex:null,feats:[],logo:null,useEmail:true,useWsp:true,wantCall:false};
+
+function pick(el,key,val){
+  el.closest('.g2,.g3').querySelectorAll('.card').forEach(c=>{c.classList.remove('sel');const ch=c.querySelector('.chk');if(ch)ch.classList.remove('on')});
+  el.classList.add('sel');const ch=el.querySelector('.chk');if(ch)ch.classList.add('on');
+  st[key]=val;ck();
+}
+function pickStyle(el,val){document.querySelectorAll('.style-card').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');st.estilo=val;ck();}
+function pickPal(el,name,hex){document.querySelectorAll('.pal').forEach(p=>p.classList.remove('sel'));el.classList.add('sel');st.pal=name;st.palHex=hex.split(',');ck();}
+function togFeat(el,name){el.classList.toggle('sel');const idx=st.feats.indexOf(name);if(idx===-1)st.feats.push(name);else st.feats.splice(idx,1);ck();}
+function togExcl(el,key,val){el.parentElement.querySelectorAll('.feat').forEach(f=>f.classList.remove('sel'));el.classList.add('sel');st[key]=val;}
+
+function togContact(type){
+  if(type==='email'){
+    st.useEmail=!st.useEmail;
+    document.getElementById('tog-email').classList.toggle('on',st.useEmail);
+    document.getElementById('tog-email-sw').classList.toggle('on',st.useEmail);
+    document.getElementById('email-block').style.display=st.useEmail?'block':'none';
+  } else {
+    st.useWsp=!st.useWsp;
+    document.getElementById('tog-wsp').classList.toggle('on',st.useWsp);
+    document.getElementById('tog-wsp-sw').classList.toggle('on',st.useWsp);
+    document.getElementById('wsp-block').style.display=st.useWsp?'block':'none';
+  }
+  ck();
+}
+
+function togCall(){
+  st.wantCall=!st.wantCall;
+  document.getElementById('call-opt').classList.toggle('on',st.wantCall);
+}
+
+document.getElementById('f-pais').addEventListener('change',function(){
+  document.getElementById('prefix-show').textContent=this.value;
+});
+
+function valField(el,key){
+  const v=el.value.trim();
+  let msg='';
+  if(key==='nombre'&&v.length<2&&v.length>0)msg='Ingresa un nombre válido (mínimo 2 caracteres).';
+  if(key==='empresa'&&v.length<2&&v.length>0)msg='Ingresa el nombre de tu empresa.';
+  if(key==='email'&&v.length>0&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v))msg='Ingresa un email válido.';
+  if(key==='phone'&&v.length>0&&!/^\d{7,12}$/.test(v.replace(/\s/g,'')))msg='Ingresa un WhatsApp válido (solo números).';
+  const el2=document.getElementById('e-'+key);
+  if(el2)el2.textContent=msg;
+  ck();
+}
+
+function ck(){
+  const bn=document.getElementById('bn');
+  if(cur===1)bn.disabled=!st.tipo;
+  else if(cur===2)bn.disabled=!st.estilo||!st.pal;
+  else if(cur===3)bn.disabled=st.feats.length===0;
+  else if(cur===4){
+    const nombre=document.getElementById('f-nombre').value.trim();
+    const empresa=document.getElementById('f-empresa').value.trim();
+    const hasContact=(st.useEmail&&document.getElementById('f-email').value.trim())||(st.useWsp&&document.getElementById('f-phone').value.trim());
+    bn.disabled=!(nombre.length>=2&&empresa.length>=2&&hasContact);
+  }
+  else bn.disabled=false;
+}
+
+function show(n){
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  document.getElementById('s'+n).classList.add('on');
+  [1,2,3,4,5].forEach(i=>{const d=document.getElementById('d'+i);d.classList.remove('on','done');if(i<n)d.classList.add('done');else if(i===n)d.classList.add('on')});
+  const pct=[0,20,40,60,80,100][n]||100;
+  document.getElementById('prog').style.width=pct+'%';
+  document.getElementById('bb').style.visibility=n>1&&n<5?'visible':'hidden';
+  const bn=document.getElementById('bn');
+  if(n===4){bn.innerHTML='Enviar <i class="ti ti-send" style="font-size:13px" aria-hidden="true"></i>';bn.disabled=true;}
+  else{bn.innerHTML='Continuar <i class="ti ti-arrow-right" style="font-size:13px" aria-hidden="true"></i>';}
+  if(n===5)document.getElementById('foot').style.display='none';
+  ck();
+}
+
+function next(){
+  if(cur===4){fillSummary();cur=5;show(5);return;}
+  if(cur===3){
+    document.getElementById('sv-tipo').textContent=st.tipo||'—';
+    document.getElementById('sv-estilo').textContent=st.estilo||'—';
+    const pv=document.getElementById('sv-pal');
+    if(st.pal&&st.palHex){pv.innerHTML=st.pal+'<span class="pal-mini">'+st.palHex.map(c=>`<span class="pal-dot" style="background:${c}"></span>`).join('')+'</span>';}
+    else pv.textContent='—';
+    document.getElementById('sv-feats').textContent=st.feats.length?st.feats.join(', '):'—';
+  }
+  cur++;show(cur);
+}
+
+function back(){if(cur<=1)return;cur--;show(cur);}
+
+function fillSummary(){}
+
+function sendWsp(){
+  const neg=document.getElementById('f-empresa').value||'No indicado';
+  const nombre=document.getElementById('f-nombre').value||'No indicado';
+  const pais=document.getElementById('f-pais').value||'+56';
+  const phone=document.getElementById('f-phone').value||'—';
+  const email=document.getElementById('f-email').value||'—';
+  const llamada=st.wantCall?'Sí, solicita llamada':'No';
+  const msg=`🌐 *Solicitud WebExpress*\n\n*Nombre:* ${nombre}\n*Empresa:* ${neg}\n*Tipo de sitio:* ${st.tipo||'—'}\n*Estilo:* ${st.estilo||'—'}\n*Paleta:* ${st.pal||'—'}\n*Secciones:* ${st.feats.join(', ')||'—'}\n*Logo:* ${st.logo||'No especificado'}\n*WhatsApp:* ${pais} ${phone}\n*Email:* ${email}\n*Llamada:* ${llamada}\n\n_Enviado desde falcodevs.cl_`;
+  openLink('https://wa.me/56927444800?text='+encodeURIComponent(msg));
+}
+
+show(1);
+</script>
